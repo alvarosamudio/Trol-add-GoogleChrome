@@ -1,0 +1,119 @@
+<parameter name="content">
+// Popup Script for Trol Images Extension
+
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById('toggle');
+  const statusIndicator = document.getElementById('statusIndicator');
+  const statusText = document.getElementById('statusText');
+  const customImageInput = document.getElementById('customImage');
+  const saveImageBtn = document.getElementById('saveImage');
+  const previewImg = document.getElementById('preview');
+
+  // URL por defecto
+  const DEFAULT_IMAGE = 'http://www.techtricksworld.com/wp-content/uploads/2015/12/Error-404.png';
+
+  // Cargar imagen guardada
+  chrome.storage.local.get(['trolImage'], (result) => {
+    const imageUrl = result.trolImage || DEFAULT_IMAGE;
+    customImageInput.value = result.trolImage || '';
+    previewImg.src = imageUrl;
+  });
+
+  // Obtener estado actual
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (tabs[0]) {
+      chrome.tabs.sendMessage(tabs[0].id, { action: 'status' }, (response) => {
+        if (response && response.enabled !== undefined) {
+          updateUI(response.enabled);
+        } else {
+          const enabled = false;
+          updateUI(enabled);
+        }
+      });
+    }
+  });
+
+  // Manejar cambio del toggle
+  toggle.addEventListener('change', () => {
+    const enabled = toggle.checked;
+    
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]) {
+        chrome.tabs.sendMessage(tabs[0].id, { 
+          action: 'toggle', 
+          enabled: enabled 
+        }, (response) => {
+          if (response && response.success) {
+            updateUI(enabled);
+          } else {
+            chrome.scripting.executeScript({
+              target: { tabId: tabs[0].id },
+              files: ['content.js']
+            }).then(() => {
+              setTimeout(() => {
+                chrome.tabs.sendMessage(tabs[0].id, { 
+                  action: 'toggle', 
+                  enabled: enabled 
+                }, () => {
+                  updateUI(enabled);
+                });
+              }, 100);
+            }).catch((error) => {
+              console.error('Script injection failed:', error);
+              updateUI(enabled);
+            });
+          }
+        });
+      }
+    });
+  });
+
+  // Guardar imagen personalizada
+  saveImageBtn.addEventListener('click', () => {
+    const imageUrl = customImageInput.value.trim();
+    
+    if (imageUrl) {
+      // Validar que sea una URL válida
+      try {
+        new URL(imageUrl);
+        chrome.storage.local.set({ trolImage: imageUrl });
+        previewImg.src = imageUrl;
+        alert('✅ Imagen guardada!\n\nSe aplicará en las próximas páginas que visites.');
+      } catch (e) {
+        alert('❌ URL inválida. Por favor ingresa una URL correcta.');
+      }
+    } else {
+      // Restaurar imagen por defecto
+      chrome.storage.local.remove(['trolImage']);
+      previewImg.src = DEFAULT_IMAGE;
+      alert('✅ Imagen restaurada a默认值 (Error 404)');
+    }
+  });
+
+  // Vista previa al escribir
+  customImageInput.addEventListener('input', () => {
+    const url = customImageInput.value.trim();
+    if (url) {
+      previewImg.src = url;
+    } else {
+      previewImg.src = DEFAULT_IMAGE;
+    }
+  });
+
+  // Actualizar UI
+  function updateUI(enabled) {
+    toggle.checked = enabled;
+    
+    if (enabled) {
+      statusIndicator.classList.add('active');
+      statusText.textContent = 'ACTIVADO';
+      statusText.classList.add('active');
+    } else {
+      statusIndicator.classList.remove('active');
+      statusText.textContent = 'DESACTIVADO';
+      statusText.classList.remove('active');
+    }
+  }
+});
+
+</parameter>

@@ -1,0 +1,146 @@
+ cambiar <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generar Íconos - Trol Images</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #1a1a2e;
+      color: #fff;
+    }
+    h1 { color: #00d4ff; }
+    .instructions {
+      background: #16213e;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+    button {
+      background: #2ed573;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover { background: #26af61; }
+    .preview {
+      margin-top: 20px;
+    }
+    canvas {
+      border: 2px solid #333;
+      margin: 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎭 Generar Íconos para Trol Images</h1>
+  
+  <div class="instructions">
+    <h2>Instrucciones:</h2>
+    <ol>
+      <li>Haz clic en "Generar Íconos" para crear las imágenes</li>
+      <li>Se descargarán automáticamente: icon16.png, icon48.png, icon128.png</li>
+      <li>Guarda los archivos en la carpeta <code>icons/</code></li>
+    </ol>
+    <br>
+    <button onclick="generateIcons()">🎨 Generar Íconos</button>
+  </div>
+
+  <div class="preview">
+    <h3>Vista previa:</h3>
+    <canvas id="canvas16" width="16" height="16"></canvas>
+    <canvas id="canvas48" width="48" height="48"></canvas>
+    <canvas id="canvas128" width="128" height="128"></canvas>
+  </div>
+
+  <script>
+    function drawIcon(canvas, size) {
+      const ctx = canvas.getContext('2d');
+      
+      // Fondo degradado
+      const gradient = ctx.createLinearGradient(0, 0, size, size);
+      gradient.addColorStop(0, '#667eea');
+      gradient.addColorStop(1, '#764ba2');
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.roundRect(0, 0, size, size, size * 0.2);
+      ctx.fill();
+      
+      // Cara de trol (emoji simple)
+      ctx.fillStyle = '#fff';
+      ctx.font = `bold ${size * 0.5}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🎭', size / 2, size / 2);
+      
+      // Ojos
+      ctx.fillStyle = '#fff';
+      const eyeSize = size * 0.12;
+      ctx.beginPath();
+      ctx.arc(size * 0.35, size * 0.4, eyeSize, 0, Math.PI * 2);
+      ctx.arc(size * 0.65, size * 0.4, eyeSize, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Pupilas
+      ctx.fillStyle = '#1a1a2e';
+      ctx.beginPath();
+      ctx.arc(size * 0.35, size * 0.4, eyeSize * 0.5, 0, Math.PI * 2);
+      ctx.arc(size * 0.65, size * 0.4, eyeSize * 0.5, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Sonrisa
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = size * 0.03;
+      ctx.beginPath();
+      ctx.arc(size / 2, size * 0.55, size * 0.25, 0.1 * Math.PI, 0.9 * Math.PI);
+      ctx.stroke();
+    }
+
+    function downloadCanvas(canvas, filename) {
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+    }
+
+    function generateIcons() {
+      const sizes = [16, 48, 128];
+      const canvases = [
+        document.getElementById('canvas16'),
+        document.getElementById('canvas48'),
+        document.getElementById('canvas128')
+      ];
+
+      canvases.forEach((canvas, index) => {
+        drawIcon(canvas, sizes[index]);
+        downloadCanvas(canvas, `icon${sizes[index]}.png`);
+      });
+
+      alert('¡Íconos generados y descargados! 📥\n\nGuarda los archivos en la carpeta "icons/" de tu extensión.');
+    }
+
+    // Generar preview al cargar
+    window.onload = () => {
+      drawIcon(document.getElementById('canvas16'), 16);
+      drawIcon(document.getElementById('canvas48'), 48);
+      drawIcon(document.getElementById('canvas128'), 128);
+    };
+  </script>
+</body>
+</html>
+

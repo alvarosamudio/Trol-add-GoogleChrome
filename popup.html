@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trol Images</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 280px;
+      min-height: 150px;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      color: #00d4ff;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    .status-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ff4757;
+      transition: background 0.3s ease;
+    }
+
+    .status-indicator.active {
+      background: #2ed573;
+      box-shadow: 0 0 10px #2ed573;
+    }
+
+    .status-text {
+      font-size: 14px;
+      color: #ff4757;
+    }
+
+    .status-text.active {
+      color: #2ed573;
+    }
+
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .toggle-label {
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 60px;
+      height: 30px;
+      cursor: pointer;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #374151;
+      transition: 0.3s;
+      border-radius: 30px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 24px;
+      width: 24px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #2ed573;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(30px);
+    }
+
+    .footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 11px;
+      color: #666;
+    }
+
+    .image-config {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    .image-config label {
+      display: block;
+      font-size: 12px;
+      color: #ccc;
+      margin-bottom: 8px;
+    }
+
+    .image-config input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #333;
+      border-radius: 5px;
+      background: #1a1a2e;
+      color: #fff;
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+
+    .image-config input:focus {
+      outline: none;
+      border-color: #00d4ff;
+    }
+
+    .image-config button {
+      width: 100%;
+      padding: 8px;
+      background: #00d4ff;
+      border: none;
+      border-radius: 5px;
+      color: #1a1a2e;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .image-config button:hover {
+      background: #00a8cc;
+    }
+
+    .preview-container {
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .preview-container p {
+      font-size: 11px;
+      color: #888;
+      margin-bottom: 8px;
+    }
+
+    .preview-container img {
+      max-width: 100%;
+      max-height: 80px;
+      border-radius: 5px;
+      border: 2px solid #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎭 Trol Images</h1>
+    <p>¡Convierte todas las imágenes en error 404!</p>
+  </div>
+
+  <div class="status">
+    <div class="status-indicator" id="statusIndicator"></div>
+    <span class="status-text" id="statusText">DESACTIVADO</span>
+  </div>
+
+  <div class="toggle-container">
+    <span class="toggle-label">Off</span>
+    <label class="toggle-switch">
+      <input type="checkbox" id="toggle">
+      <span class="slider"></span>
+    </label>
+    <span class="toggle-label">On</span>
+  </div>
+
+  <div class="image-config">
+    <label for="customImage">🖼️ Imagen de reemplazo:</label>
+    <input type="text" id="customImage" placeholder="https://ejemplo.com/imagen.png">
+    <button id="saveImage">Guardar</button>
+  </div>
+
+  <div class="preview-container">
+    <p>Vista previa:</p>
+    <img id="preview" src="" alt="Preview">
+  </div>
+
+  <div class="footer">
+    <p>Estado sincronizado con la página actual</p>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
+
